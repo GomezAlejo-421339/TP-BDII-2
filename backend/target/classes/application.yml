@@ -1,0 +1,21 @@
+spring:
+  neo4j:
+    uri: neo4j+s://c260d5fc.databases.neo4j.io
+    authentication:
+      username: c260d5fc
+      password: 76dQwPFwV8RfytjIMdYdChYOKayxgzrR1QKz9h957Qg
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+
+app:
+  seed-data: true
+
+logging:
+  level:
+    com.fakegraph: DEBUG
+    org.springframework.data.neo4j: DEBUG

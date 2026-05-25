@@ -1,0 +1,6 @@
+com/fakegraph/repository/DistribucionCredibilidad.class
+com/fakegraph/repository/TopUsuarioStats.class
+com/fakegraph/repository/ResumenDBStats.class
+com/fakegraph/repository/NoticiasPorFuenteStats.class
+com/fakegraph/repository/NoticiasPorTemaStats.class
+com/fakegraph/repository/TendenciaStats.class
