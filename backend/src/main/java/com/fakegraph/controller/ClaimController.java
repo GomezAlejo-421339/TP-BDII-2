@@ -1,5 +1,6 @@
 package com.fakegraph.controller;
 
+import com.fakegraph.DTO.requests.ClaimRequestDTO;
 import com.fakegraph.model.Claim;
 import com.fakegraph.service.ClaimService;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,12 @@ public class ClaimController {
     }
 
     @PostMapping
-    public ResponseEntity<Claim> crearClaim(@RequestBody Claim claim) {
+    public ResponseEntity<Claim> crearClaim(@RequestBody ClaimRequestDTO claim) {
         return ResponseEntity.ok(claimService.save(claim));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Claim> actualizarClaim(@PathVariable String id, @RequestBody Claim claim) {
+    public ResponseEntity<Claim> actualizarClaim(@PathVariable String id, @RequestBody ClaimRequestDTO claim) {
         return ResponseEntity.ok(claimService.update(id, claim));
     }
 

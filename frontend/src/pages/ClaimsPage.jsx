@@ -5,7 +5,7 @@ import { useToast } from '../components/ToastProvider'
 const empty = { id: '', texto: '', hash: '' }
 
 const columns = [
-  { key: 'id', label: 'ID' },
+  { key: 'id', label: '#', render: (_, i) => i + 1 },
   {
     key: 'texto', label: 'Texto',
     render: (c) => <span className="truncate block max-w-xs">{c.texto}</span>
@@ -37,9 +37,12 @@ export default function ClaimsPage() {
   const handleSave = async (e) => {
     e.preventDefault()
     setSaving(true)
-    const body = { id: form.id, texto: form.texto, hash: form.hash }
-    const method = claims.find(c => c.id === form.id) ? 'PUT' : 'POST'
-    const url = method === 'PUT' ? `/api/v1/claims/${form.id}` : '/api/v1/claims'
+    const isEdit = claims.some(c => c.id === form.id)
+    const body = isEdit
+      ? { id: form.id, texto: form.texto, hash: form.hash }
+      : { texto: form.texto, hash: form.hash }
+    const method = isEdit ? 'PUT' : 'POST'
+    const url = isEdit ? `/api/v1/claims/${form.id}` : '/api/v1/claims'
     try {
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!res.ok) throw new Error('Error al guardar')
@@ -54,6 +57,7 @@ export default function ClaimsPage() {
 
   const handleDelete = async (c) => {
     try {
+      console.log(c)
       const res = await fetch(`/api/v1/claims/${c.id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Error al eliminar')
       addToast('Claim eliminado')
@@ -78,13 +82,15 @@ export default function ClaimsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
           <form onSubmit={handleSave} className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4 space-y-4">
             <h2 className="text-lg font-bold text-gray-900">
-              {claims.find(c => c.id === form.id) ? 'Editar Claim' : 'Nuevo Claim'}
+              {claims.some(c => c.id === form.id) ? 'Editar Claim' : 'Nuevo Claim'}
             </h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">ID</label>
-              <input value={form.id} onChange={e => setForm({ ...form, id: e.target.value })} required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
+            {claims.some(c => c.id === form.id) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">ID</label>
+                <input value={form.id} readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 focus:outline-none cursor-not-allowed" />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Texto</label>
               <textarea value={form.texto} onChange={e => setForm({ ...form, texto: e.target.value })} required rows={3}
