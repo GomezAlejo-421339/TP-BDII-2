@@ -1,3 +1,19 @@
+# INICIAR PROYECTO
+
+FRONTEND
+
+-> npm i
+
+-> npm run dev
+
+BACKEND
+
+DOCKER -> 
+```
+docker run --name neo4j -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password123 -v neo4j_data:/data -d neo4j:5
+```
+- Puede ir a http://localhost:7474/browser/ para ver neo4j con una interfaz grafica.
+
 # FakeGraph
 
 Sistema de detección de Fake News basado en grafos Neo4j. Modela noticias, fuentes, usuarios y sus relaciones para calcular un score de credibilidad.
