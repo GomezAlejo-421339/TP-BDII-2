@@ -14,6 +14,10 @@ docker run --name neo4j -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password12
 ```
 - Puede ir a http://localhost:7474/browser/ para ver neo4j con una interfaz grafica.
 
+BASE DE DATOS
+
+-> existe una carpeta script. Debes ejecutar ese script en la base de datos. Lo podes hacer directamente desde la interfaz grafica 
+
 # FakeGraph
 
 Sistema de detección de Fake News basado en grafos Neo4j. Modela noticias, fuentes, usuarios y sus relaciones para calcular un score de credibilidad.
