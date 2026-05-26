@@ -47,6 +47,7 @@ public class AutorService {
                 .orElseThrow(() -> new RuntimeException("Autor no encontrado: " + id));
         existente.setNombre(autor.getNombre());
         existente.setHandle(autor.getHandle());
+        log.info("Autor actualizado: "+existente.getHandle()+" "+existente.getNombre());
         return autorRepository.save(existente);
     }
 

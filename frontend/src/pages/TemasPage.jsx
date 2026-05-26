@@ -5,7 +5,7 @@ import { useToast } from '../components/ToastProvider'
 const empty = { id: '', nombre: '' }
 
 const columns = [
-  { key: 'id', label: 'ID' },
+  { key: 'id', label: '#', render: (_, i) => i + 1 },
   { key: 'nombre', label: 'Nombre' },
 ]
 
@@ -33,9 +33,12 @@ export default function TemasPage() {
   const handleSave = async (e) => {
     e.preventDefault()
     setSaving(true)
-    const body = { id: form.id, nombre: form.nombre }
-    const method = temas.find(t => t.id === form.id) ? 'PUT' : 'POST'
-    const url = method === 'PUT' ? `/api/v1/temas/${form.id}` : '/api/v1/temas'
+    const isEdit = temas.some(t => t.id === form.id)
+    const body = isEdit
+      ? { id: form.id, nombre: form.nombre }
+      : { nombre: form.nombre }
+    const method = isEdit ? 'PUT' : 'POST'
+    const url = isEdit ? `/api/v1/temas/${form.id}` : '/api/v1/temas'
     try {
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!res.ok) throw new Error('Error al guardar')
@@ -74,13 +77,15 @@ export default function TemasPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
           <form onSubmit={handleSave} className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4 space-y-4">
             <h2 className="text-lg font-bold text-gray-900">
-              {temas.find(t => t.id === form.id) ? 'Editar Tema' : 'Nuevo Tema'}
+              {temas.some(t => t.id === form.id) ? 'Editar Tema' : 'Nuevo Tema'}
             </h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">ID</label>
-              <input value={form.id} onChange={e => setForm({ ...form, id: e.target.value })} required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
+            {temas.some(t => t.id === form.id) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">ID</label>
+                <input value={form.id} readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 focus:outline-none cursor-not-allowed" />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Nombre</label>
               <input value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} required

@@ -1,5 +1,6 @@
 package com.fakegraph.controller;
 
+import com.fakegraph.DTO.requests.TemaRequestDTO;
 import com.fakegraph.model.Tema;
 import com.fakegraph.service.TemaService;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,12 @@ public class TemaController {
     }
 
     @PostMapping
-    public ResponseEntity<Tema> crearTema(@RequestBody Tema tema) {
+    public ResponseEntity<Tema> crearTema(@RequestBody TemaRequestDTO tema) {
         return ResponseEntity.ok(temaService.save(tema));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tema> actualizarTema(@PathVariable String id, @RequestBody Tema tema) {
+    public ResponseEntity<Tema> actualizarTema(@PathVariable String id, @RequestBody TemaRequestDTO tema) {
         return ResponseEntity.ok(temaService.update(id, tema));
     }
 
