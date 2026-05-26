@@ -1,5 +1,6 @@
 package com.fakegraph.controller;
 
+import com.fakegraph.DTO.requests.AutorRequestDTO;
 import com.fakegraph.model.Autor;
 import com.fakegraph.service.AutorService;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,12 @@ public class AutorController {
     }
 
     @PostMapping
-    public ResponseEntity<Autor> crearAutor(@RequestBody Autor autor) {
+    public ResponseEntity<Autor> crearAutor(@RequestBody AutorRequestDTO autor) {
         return ResponseEntity.ok(autorService.save(autor));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Autor> actualizarAutor(@PathVariable String id, @RequestBody Autor autor) {
+    public ResponseEntity<Autor> actualizarAutor(@PathVariable String id, @RequestBody AutorRequestDTO autor) {
         return ResponseEntity.ok(autorService.update(id, autor));
     }
 

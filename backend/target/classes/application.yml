@@ -17,5 +17,5 @@ app:
 
 logging:
   level:
-    com.fakegraph: DEBUG
-    org.springframework.data.neo4j: DEBUG
+    com.fakegraph: INFO
+    org.springframework.data.neo4j: INFO

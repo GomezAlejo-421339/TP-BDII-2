@@ -61,7 +61,7 @@ export default function DataTable({ columns, data, loading, onEdit, onDelete, em
                 <tr key={row.id || i} className="border-b border-gray-100 hover:bg-blue-50/40 transition-colors even:bg-gray-50/30">
                   {columns.map(col => (
                     <td key={col.key} className="px-4 py-3 text-gray-900">
-                      {col.render ? col.render(row) : row[col.key]}
+                      {col.render ? col.render(row, i) : row[col.key]}
                     </td>
                   ))}
                   {(onEdit || onDelete) && (
