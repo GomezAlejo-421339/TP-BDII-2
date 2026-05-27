@@ -77,9 +77,9 @@ public class Usuario {
      */
     public void votar(Noticia noticia, TipoVoto tipoVoto, String comentario) {
         // Eliminar voto previo a la misma noticia si existe
-        reposteos.removeIf(c -> c.getNoticia() != null
-                && c.getNoticia().getId() != null
-                && c.getNoticia().getId().equals(noticia.getId()));
+        votos.removeIf(v -> v.getNoticia() != null
+                && v.getNoticia().getId() != null
+                && v.getNoticia().getId().equals(noticia.getId()));
 
         Voto voto = new Voto();
         voto.setNoticia(noticia);
