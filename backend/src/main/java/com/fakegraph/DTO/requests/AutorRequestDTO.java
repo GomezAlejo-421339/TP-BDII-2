@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class AutorRequestDTO {
     private String nombre;
-    private String handle;
+    private String biografia;
 }

@@ -1,49 +1,33 @@
 package com.fakegraph.service;
 
-import com.fakegraph.model.Usuario;
+import com.fakegraph.DTO.requests.UsuarioRequestDTO;
+import com.fakegraph.DTO.response.UsuarioResponseDTO;
+import com.fakegraph.model.nodos.Usuario;
 import com.fakegraph.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
+    private final UsuarioRepository repository;
 
-    private final UsuarioRepository usuarioRepository;
+    public UsuarioResponseDTO register(UsuarioRequestDTO request) {
+        Usuario u = new Usuario();
+        u.setEmail(request.getEmail());
+        u.setNombre(request.getNombre());
+        u.setScoreCredibility(0);
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+        Usuario usuario = repository.save(u);
+        UsuarioResponseDTO response = toUsuarioResponseDTO(usuario);
+        return response;
     }
 
-    @Transactional(readOnly = true)
-    public List<Usuario> findAll() {
-        return usuarioRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Usuario> findById(String id) {
-        return usuarioRepository.findById(id);
-    }
-
-    @Transactional
-    public Usuario save(Usuario usuario) {
-        return usuarioRepository.save(usuario);
-    }
-
-    @Transactional
-    public Usuario update(String id, Usuario usuario) {
-        Usuario existente = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + id));
-        existente.setNombre(usuario.getNombre());
-        existente.setSeguidores(usuario.getSeguidores());
-        existente.setAntiguedadDias(usuario.getAntiguedadDias());
-        return usuarioRepository.save(existente);
-    }
-
-    @Transactional
-    public void deleteById(String id) {
-        usuarioRepository.deleteById(id);
+    private UsuarioResponseDTO toUsuarioResponseDTO(Usuario u) {
+        UsuarioResponseDTO response = new UsuarioResponseDTO();
+        response.setId(u.getId());
+        response.setNombre(u.getNombre());
+        response.setEmail(u.getEmail());
+        return response;
     }
 }

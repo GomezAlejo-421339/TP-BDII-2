@@ -1,5 +1,5 @@
 // FakeGraph - Seed data de prueba (idempotente: usa MERGE para evitar duplicados)
-
+/*
 // === Fuentes ===
 MERGE (f1:Fuente {id: 'f1'}) SET f1.nombre = 'Reuters', f1.dominio = 'reuters.com', f1.verificada = true, f1.puntajeHistorial = 0.92;
 MERGE (f2:Fuente {id: 'f2'}) SET f2.nombre = 'AP News', f2.dominio = 'apnews.com', f2.verificada = true, f2.puntajeHistorial = 0.89;
@@ -218,3 +218,4 @@ MATCH (u4:Usuario {id: 'u4'}), (n13:Noticia {id: 'n13'}) MERGE (u4)-[:COMPARTE {
 MATCH (u6:Usuario {id: 'u6'}), (n13:Noticia {id: 'n13'}) MERGE (u6)-[:COMPARTE {timestamp: localdatetime('2026-05-20T11:30:00'), plataforma: 'twitter'}]->(n13);
 MATCH (u8:Usuario {id: 'u8'}), (n13:Noticia {id: 'n13'}) MERGE (u8)-[:COMPARTE {timestamp: localdatetime('2026-05-20T12:00:00'), plataforma: 'facebook'}]->(n13);
 MATCH (u9:Usuario {id: 'u9'}), (n13:Noticia {id: 'n13'}) MERGE (u9)-[:COMPARTE {timestamp: localdatetime('2026-05-20T12:30:00'), plataforma: 'twitter'}]->(n13);
+*/

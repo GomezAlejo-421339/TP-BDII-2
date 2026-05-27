@@ -1,48 +1,43 @@
 package com.fakegraph.controller;
 
 import com.fakegraph.DTO.requests.AutorRequestDTO;
-import com.fakegraph.model.Autor;
-import com.fakegraph.service.AutorService;
+import com.fakegraph.DTO.requests.AutorResponseDTO;
+import com.fakegraph.DTO.requests.AutorUpdateRequestDTO;
+import com.fakegraph.service.AutorSerivce;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/autores")
+@RequestMapping("autores")
+@RequiredArgsConstructor
 public class AutorController {
+    private final AutorSerivce serivce;
 
-    private final AutorService autorService;
-
-    public AutorController(AutorService autorService) {
-        this.autorService = autorService;
+    @PostMapping
+    public ResponseEntity<AutorResponseDTO> create(@RequestBody AutorRequestDTO request) {
+        return ResponseEntity.ok(serivce.create(request));
     }
 
     @GetMapping
-    public ResponseEntity<List<Autor>> listarAutores() {
-        return ResponseEntity.ok(autorService.findAll());
+    public ResponseEntity<List<AutorResponseDTO>> getAll() {
+        return ResponseEntity.ok(serivce.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Autor> obtenerAutor(@PathVariable String id) {
-        return autorService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public ResponseEntity<Autor> crearAutor(@RequestBody AutorRequestDTO autor) {
-        return ResponseEntity.ok(autorService.save(autor));
+    public ResponseEntity<AutorResponseDTO> getById(@PathVariable String id) {
+        return ResponseEntity.ok(serivce.getById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Autor> actualizarAutor(@PathVariable String id, @RequestBody AutorRequestDTO autor) {
-        return ResponseEntity.ok(autorService.update(id, autor));
+    public ResponseEntity<AutorResponseDTO> update(@PathVariable String id,@RequestBody AutorRequestDTO request) {
+        return ResponseEntity.ok(serivce.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarAutor(@PathVariable String id) {
-        autorService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public void update(@PathVariable String id) {
+        serivce.delete(id);
     }
 }
