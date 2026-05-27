@@ -1,5 +1,8 @@
 package com.fakegraph.service;
 
+import com.fakegraph.model.DistribucionCredibilidad;
+import com.fakegraph.repository.NoticiaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +13,11 @@ import java.util.Map;
 public class EstadisticasService {
 
     private final Neo4jClient neo4jClient;
+    private final NoticiaRepository noticiaRepository;
 
-    public EstadisticasService(Neo4jClient neo4jClient) {
+    public EstadisticasService(Neo4jClient neo4jClient, NoticiaRepository noticiaRepository) {
         this.neo4jClient = neo4jClient;
+        this.noticiaRepository = noticiaRepository;
     }
 
     public Map<String, Object> getResumen() {
@@ -29,16 +34,17 @@ public class EstadisticasService {
                 .fetch().first().orElse(Map.of());
     }
 
-    public List<Map<String, Object>> getDistribucionCredibilidad() {
-        return (List<Map<String, Object>>) neo4jClient.query(
-                "MATCH (n:Noticia) " +
-                "WITH CASE " +
-                "  WHEN n.scoreCredibilidad >= 0.6 THEN 'Confiable' " +
-                "  WHEN n.scoreCredibilidad >= 0.3 THEN 'Dudosa' " +
-                "  ELSE 'Crítica' END AS name, " +
-                "count(n) AS value " +
-                "RETURN name, value")
-                .fetch().all();
+    public List<DistribucionCredibilidad> getDistribucionCredibilidad() {
+//        return (List<Map<String, Object>>) neo4jClient.query(
+//                "MATCH (n:Noticia) " +
+//                "WITH CASE " +
+//                "  WHEN n.scoreCredibilidad >= 0.6 THEN 'Confiable' " +
+//                "  WHEN n.scoreCredibilidad >= 0.3 THEN 'Dudosa' " +
+//                "  ELSE 'Crítica' END AS name, " +
+//                "count(n) AS value " +
+//                "RETURN name, value")
+//                .fetch().all();
+        return noticiaRepository.getDistribucionCredibilidad();
     }
 
     public List<Map<String, Object>> getNoticiasPorFuente() {

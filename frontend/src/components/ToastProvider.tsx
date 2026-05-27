@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import { CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
-type ToastType = 'success' | 'error'
+type ToastType = 'success' | 'error' | 'warning' | 'info'
 
 interface Toast {
   id: number
@@ -46,14 +46,16 @@ export function ToastProvider({ children }: ToastProviderProps) {
           <div
             key={toast.id}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-modal text-sm font-medium animate-slide-up max-w-sm ${
-              toast.type === 'success'
-                ? 'bg-green-600 text-white'
-                : 'bg-red-600 text-white'
+              toast.type === 'success' ? 'bg-green-600 text-white'
+              : toast.type === 'error' ? 'bg-red-600 text-white'
+              : toast.type === 'warning' ? 'bg-amber-500 text-white'
+              : 'bg-blue-600 text-white'
             }`}
           >
-            {toast.type === 'success'
-              ? <CheckCircleIcon className="w-5 h-5 shrink-0" />
-              : <XCircleIcon className="w-5 h-5 shrink-0" />
+            {toast.type === 'success' ? <CheckCircleIcon className="w-5 h-5 shrink-0" />
+              : toast.type === 'error' ? <XCircleIcon className="w-5 h-5 shrink-0" />
+              : toast.type === 'warning' ? <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
+              : <InformationCircleIcon className="w-5 h-5 shrink-0" />
             }
             <span className="flex-1">{toast.message}</span>
             <button onClick={() => removeToast(toast.id)} className="shrink-0 opacity-70 hover:opacity-100">

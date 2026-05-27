@@ -36,7 +36,12 @@ public class NoticiaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<NoticiaResponseDTO>> listarNoticias(Pageable pageable) {
+    public ResponseEntity<Page<NoticiaResponseDTO>> listarNoticias(@RequestParam(required = false) String titulo, Pageable pageable) {
+        if (titulo != null && !titulo.trim().isEmpty()) {
+            // Nota: Idealmente tu servicio debería soportar paginación aquí también
+            return ResponseEntity.ok(noticiaService.buscarPorTitulo(titulo, pageable));
+        }
+
         return ResponseEntity.ok(noticiaService.listarNoticias(pageable));
     }
 
@@ -85,4 +90,5 @@ public class NoticiaController {
     public ResponseEntity<Iterable<NoticiaResponseDTO>> listarSospechosas() {
         return ResponseEntity.ok(noticiaService.listarSospechosas());
     }
+
 }

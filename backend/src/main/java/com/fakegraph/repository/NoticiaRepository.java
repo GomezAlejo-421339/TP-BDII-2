@@ -1,5 +1,6 @@
 package com.fakegraph.repository;
 
+import com.fakegraph.model.DistribucionCredibilidad;
 import com.fakegraph.model.nodos.Noticia;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,6 +8,8 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 
 public interface NoticiaRepository extends Neo4jRepository<Noticia, Long> {
 
@@ -43,4 +46,15 @@ public interface NoticiaRepository extends Neo4jRepository<Noticia, Long> {
     Iterable<Noticia> findNoticiasSospechosasAltaDifusion();
     
     java.util.Optional<Noticia> findByUrl(String url);
+
+    Page<Noticia> findByTitulo(String titulo, Pageable pageable);
+
+    @Query("MATCH (n:Noticia) " +
+            "WITH CASE " +
+            "  WHEN n.scoreCredibilidad >= 0.6 THEN 'Confiable' " +
+            "  WHEN n.scoreCredibilidad >= 0.3 THEN 'Dudosa' " +
+            "  ELSE 'Crítica' END AS name, " +
+            "count(n) AS value " +
+            "RETURN name, value")
+    List<DistribucionCredibilidad> getDistribucionCredibilidad();
 }

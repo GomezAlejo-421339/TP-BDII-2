@@ -1,5 +1,6 @@
 package com.fakegraph.controller;
 
+import com.fakegraph.model.DistribucionCredibilidad;
 import com.fakegraph.service.EstadisticasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class EstadisticasController {
     }
 
     @GetMapping("/distribucion")
-    public ResponseEntity<List<Map<String, Object>>> getDistribucionCredibilidad() {
+    public ResponseEntity<List<DistribucionCredibilidad>> getDistribucionCredibilidad() {
         return ResponseEntity.ok(estadisticasService.getDistribucionCredibilidad());
     }
 

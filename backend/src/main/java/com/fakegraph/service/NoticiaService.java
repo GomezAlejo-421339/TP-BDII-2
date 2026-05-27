@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.neo4j.core.Neo4jClient;
+
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 import java.util.Optional;
@@ -174,5 +176,11 @@ public class NoticiaService {
         // o si las relaciones VOTO/COMPARTE estuvieran mapedas desde Noticia, 
         // pero SDN 6 cargaría grafos inmensos. Las estadísticas las proveerá EstadisticasService.
         return response;
+    }
+
+    public Page<NoticiaResponseDTO> buscarPorTitulo(String titulo, Pageable pageable) {
+        Page<Noticia> noticias = noticiaRepository.findByTitulo(titulo, pageable);
+
+        return noticias.map(n -> toNoticiaResponseDTO(n, false));
     }
 }
