@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { UserIcon, EnvelopeIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
+import { useNavigate, Link } from 'react-router-dom'
+import { UserIcon, EnvelopeIcon, ArrowRightIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 import { useToast } from '../components/ToastProvider'
+import { useAuth } from '../context/AuthContext'
 import { apiFetch } from '../utils/Fetch'
+
 interface RegisterResponse {
     nombre: string
     email: string
@@ -12,35 +14,42 @@ interface RegisterResponse {
 export function RegisterPage() {
     const [nombre, setNombre] = useState('')
     const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const { login } = useAuth()
     const addToast = useToast()
 
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        if (!nombre.trim() || !email.trim()) {
+        if (!nombre.trim() || !email.trim() || !password.trim()) {
             addToast('Por favor, completa todos los campos', 'error')
+            return
+        }
+        if (password.length < 6) {
+            addToast('La contraseña debe tener al menos 6 caracteres', 'error')
             return
         }
 
         setLoading(true)
         try {
-            const data = await apiFetch<RegisterResponse>('/usuarios', {
+            const data = await apiFetch<RegisterResponse>('/api/usuarios', {
                 method: 'POST',
                 body: JSON.stringify({
                     nombre,
                     email,
+                    password
                 }),
             })
 
-            // Guardar el id en localStorage
-            localStorage.setItem('userId', data.id)
-            localStorage.setItem('userNombre', data.nombre)
-            localStorage.setItem('userEmail', data.email)
+            // Guardar usuario en el contexto (que maneja localStorage internamente)
+            login({
+                id: data.id,
+                nombre: data.nombre,
+                email: data.email,
+            })
 
             addToast('¡Registro exitoso!', 'success')
-
-            // Redirigir al dashboard u otra página
             navigate('/')
         } catch (error: any) {
             addToast(error.message || 'Error al conectar con el servidor', 'error')
@@ -108,6 +117,27 @@ export function RegisterPage() {
                                 />
                             </div>
                         </div>
+
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                Contraseña
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <LockClosedIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                </div>
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="appearance-none rounded-xl relative block w-full pl-10 pr-3 py-2.5 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
+                                    placeholder="••••••"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div>
@@ -124,6 +154,15 @@ export function RegisterPage() {
                                 </span>
                             )}
                         </button>
+                    </div>
+
+                    <div className="text-center pt-2">
+                        <p className="text-sm text-gray-600">
+                            ¿Ya tienes una cuenta?{' '}
+                            <Link to="/login" className="font-semibold text-blue-600 hover:underline">
+                                Inicia sesión aquí
+                            </Link>
+                        </p>
                     </div>
                 </form>
             </div>

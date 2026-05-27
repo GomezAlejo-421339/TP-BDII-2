@@ -16,6 +16,7 @@ interface ResumenDb {
   totalClaims: number
   totalUsuarios: number
 }
+import { apiFetch } from '../utils/Fetch'
 
 export default function EstadisticasPage() {
   const [resumen, setResumen] = useState<ResumenDb | null>(null)
@@ -29,12 +30,12 @@ export default function EstadisticasPage() {
   useEffect(() => {
     setLoading(true)
     Promise.all([
-      fetch('/api/v1/estadisticas/resumen-bd').then(r => r.json().catch(() => null)),
-      fetch('/api/v1/estadisticas/distribucion').then(r => r.json().catch(() => [])),
-      fetch('/api/v1/estadisticas/por-fuente').then(r => r.json().catch(() => [])),
-      fetch('/api/v1/estadisticas/por-tema').then(r => r.json().catch(() => [])),
-      fetch('/api/v1/estadisticas/usuarios-top').then(r => r.json().catch(() => [])),
-      fetch('/api/v1/estadisticas/tendencia').then(r => r.json().catch(() => [])),
+      apiFetch<ResumenDb>('/api/estadisticas/resumen-bd').catch(() => null),
+      apiFetch<CredibilidadDonutItem[]>('/api/estadisticas/distribucion').catch(() => []),
+      apiFetch<FuenteBarChartItem[]>('/api/estadisticas/por-fuente').catch(() => []),
+      apiFetch<TemaBarChartItem[]>('/api/estadisticas/por-tema').catch(() => []),
+      apiFetch<TopUsuariosRankingItem[]>('/api/estadisticas/usuarios-top').catch(() => []),
+      apiFetch<TendenciaLineChartItem[]>('/api/estadisticas/tendencia').catch(() => []),
     ])
       .then(([r, d, f, t, u, te]) => {
         setResumen(r)

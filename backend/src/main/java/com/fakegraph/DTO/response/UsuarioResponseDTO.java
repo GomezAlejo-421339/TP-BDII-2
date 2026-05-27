@@ -7,4 +7,7 @@ public class UsuarioResponseDTO {
     private Long id;
     private String nombre;
     private String email;
+    private int scoreCredibilidad;
+    private Integer seguidores;
+    private Integer antiguedadDias;
 }

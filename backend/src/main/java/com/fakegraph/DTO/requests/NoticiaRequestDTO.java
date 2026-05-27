@@ -5,9 +5,7 @@ import lombok.Data;
 @Data
 public class NoticiaRequestDTO {
     private String titulo;
-    private String resumen;
     private String url;
-    private String autor_id;
-    private String fuente_id;
-    private String tema_id;
+    private String tema; // Nombre del tema (viene de un dropdown)
+    private String autorNombre; // Opcional — nombre del redactor del artículo (texto libre)
 }

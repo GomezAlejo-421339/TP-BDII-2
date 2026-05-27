@@ -152,16 +152,16 @@ MATCH (n8:Noticia {id: 'n8'}), (c2:Claim {id: 'c2'}) MERGE (n8)-[:DESMIENTE]->(c
 MATCH (n14:Noticia {id: 'n14'}), (c6:Claim {id: 'c6'}) MERGE (n14)-[:DESMIENTE]->(c6);
 
 // === Usuarios ===
-MERGE (u1:Usuario {id: 'u1'}) SET u1.nombre = 'UsuarioBot1', u1.seguidores = 120, u1.antiguedadDias = 3;
-MERGE (u2:Usuario {id: 'u2'}) SET u2.nombre = 'UsuarioBot2', u2.seguidores = 45, u2.antiguedadDias = 5;
-MERGE (u3:Usuario {id: 'u3'}) SET u3.nombre = 'UsuarioReal1', u3.seguidores = 1500, u3.antiguedadDias = 720;
-MERGE (u4:Usuario {id: 'u4'}) SET u4.nombre = 'UsuarioBot3', u4.seguidores = 80, u4.antiguedadDias = 2;
-MERGE (u5:Usuario {id: 'u5'}) SET u5.nombre = 'UsuarioReal2', u5.seguidores = 3200, u5.antiguedadDias = 1095;
-MERGE (u6:Usuario {id: 'u6'}) SET u6.nombre = 'UsuarioBot4', u6.seguidores = 200, u6.antiguedadDias = 10;
-MERGE (u7:Usuario {id: 'u7'}) SET u7.nombre = 'UsuarioReal3', u7.seguidores = 890, u7.antiguedadDias = 540;
-MERGE (u8:Usuario {id: 'u8'}) SET u8.nombre = 'UsuarioBot5', u8.seguidores = 30, u8.antiguedadDias = 1;
-MERGE (u9:Usuario {id: 'u9'}) SET u9.nombre = 'UsuarioBot6', u9.seguidores = 150, u9.antiguedadDias = 7;
-MERGE (u10:Usuario {id: 'u10'}) SET u10.nombre = 'UsuarioReal4', u10.seguidores = 2100, u10.antiguedadDias = 800;
+MERGE (u1:Usuario {id: 'u1'}) SET u1.nombre = 'UsuarioBot1', u1.seguidores = 120, u1.antiguedadDias = 3, u1.email = 'usuariobot1@ejemplo.com', u1.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u2:Usuario {id: 'u2'}) SET u2.nombre = 'UsuarioBot2', u2.seguidores = 45, u2.antiguedadDias = 5, u2.email = 'usuariobot2@ejemplo.com', u2.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u3:Usuario {id: 'u3'}) SET u3.nombre = 'UsuarioReal1', u3.seguidores = 1500, u3.antiguedadDias = 720, u3.email = 'usuarioreal1@ejemplo.com', u3.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u4:Usuario {id: 'u4'}) SET u4.nombre = 'UsuarioBot3', u4.seguidores = 80, u4.antiguedadDias = 2, u4.email = 'usuariobot3@ejemplo.com', u4.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u5:Usuario {id: 'u5'}) SET u5.nombre = 'UsuarioReal2', u5.seguidores = 3200, u5.antiguedadDias = 1095, u5.email = 'usuarioreal2@ejemplo.com', u5.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u6:Usuario {id: 'u6'}) SET u6.nombre = 'UsuarioBot4', u6.seguidores = 200, u6.antiguedadDias = 10, u6.email = 'usuariobot4@ejemplo.com', u6.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u7:Usuario {id: 'u7'}) SET u7.nombre = 'UsuarioReal3', u7.seguidores = 890, u7.antiguedadDias = 540, u7.email = 'usuarioreal3@ejemplo.com', u7.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u8:Usuario {id: 'u8'}) SET u8.nombre = 'UsuarioBot5', u8.seguidores = 30, u8.antiguedadDias = 1, u8.email = 'usuariobot5@ejemplo.com', u8.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u9:Usuario {id: 'u9'}) SET u9.nombre = 'UsuarioBot6', u9.seguidores = 150, u9.antiguedadDias = 7, u9.email = 'usuariobot6@ejemplo.com', u9.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
+MERGE (u10:Usuario {id: 'u10'}) SET u10.nombre = 'UsuarioReal4', u10.seguidores = 2100, u10.antiguedadDias = 800, u10.email = 'usuarioreal4@ejemplo.com', u10.passwordHash = 'ef92b778bafe4f5b165b13952c0a5068e67922d0a8b15d9c2f689e47087611e9';
 
 // Relaciones COMPARTE
 MATCH (u1:Usuario {id: 'u1'}), (n2:Noticia {id: 'n2'}) MERGE (u1)-[:COMPARTE {timestamp: localdatetime('2026-05-03T15:00:00'), plataforma: 'twitter'}]->(n2);

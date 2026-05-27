@@ -191,3 +191,83 @@ MODIFICADOS:
   components/CredibilidadChart.jsx (agrandado)
   components/GrafoVisualization.jsx (reescrito con react-force-graph-2d)
 ```
+
+---
+
+## Sesión: Registro/Login de Usuarios con Contraseñas SHA-256 + Panel de Confiabilidad y Limpieza de Código Muerto (27 mayo)
+
+### Backend — Cambios Realizados
+- **Seguridad (Cifrado SHA-256)**:
+  - Nueva clase `com.fakegraph.utils.PasswordUtils` utilizando `MessageDigest` y `HexFormat` de Java 21 para cifrado y validación.
+- **Entidades y Base de Datos**:
+  - `Usuario.java`: Mapeados campos `seguidores`, `antiguedadDias` y `passwordHash`.
+  - `seed.cypher`: Actualizado para proveer correos (`usuariobot1@ejemplo.com`, etc.) y `passwordHash` (para contraseña por defecto `password123`) a todos los usuarios cargados por defecto.
+- **DTOs y Solicitudes**:
+  - `UsuarioRequestDTO.java`: Añadido el campo `password`.
+  - `UsuarioResponseDTO.java`: Añadidos los campos `scoreCredibilidad`, `seguidores` y `antiguedadDias`.
+  - Nuevo DTO `LoginRequestDTO.java` para capturar credenciales en el inicio de sesión.
+- **Servicios y Controladores**:
+  - `UsuarioService.java`: Actualizados métodos de registro (encriptación) y login (comprobación hash y control de email no registrado).
+  - `UsuarioController.java`: Expuesto el endpoint `POST /api/v1/usuarios/login` y mantenida la restricción CRUD.
+- **Consistencia del Grafo (Cascada)**:
+  - `UsuarioRepository.java`: Agregada consulta nativa en cascada `recalcularUsuariosQueVotaron` que actualiza dinámicamente la confiabilidad de los usuarios en base a la veracidad final de las noticias que votaron.
+  - `NoticiaService.java`: Invoca a la query en cascada tras recalcular la credibilidad de una noticia.
+- **Limpieza de Código Muerto**:
+  - Eliminada la entidad de base de datos no referenciada `MetricaConsulta.java`.
+
+### Frontend — Cambios Realizados
+- **Gestión de Sesión**:
+  - Nuevo contexto `AuthContext.tsx` que interactúa con `localStorage` y provee `user`, `login` y `logout` de manera centralizada.
+  - `App.tsx` envuelto en `AuthProvider` con la nueva ruta `/login` incorporada.
+- **Vistas y Componentes**:
+  - Nueva página `LoginPage.tsx` (diseño glassmorphism refinado, loading states e input tipo password).
+  - `RegisterPage.tsx` actualizado para incluir contraseña, validar largo mínimo e iniciar sesión inmediatamente al registrarse.
+  - `Header.tsx` dinámico: Muestra avatar "👋 [Nombre]" y botón "Salir" si está logueado; y enlaces "Ingresar" / "Registrarse" si no. Botón "Publicar Noticia" redirige/advierte si se ingresa como visitante anónimo.
+  - `UsuariosPage.tsx` rediseñada: Operaciones CRUD removidas por completo. Muestra enmascaramiento parcial de emails (`us***@mail.com`) y barras de progreso animadas según reputación (Confiable: Verde, Dudosa: Amarillo, Crítica: Rojo).
+  - `NoticiaDetail.tsx`: Muestra banner explicativo y bloquea acciones de votos/reposteos a invitados anónimos.
+- **Limpieza de Código Muerto y Fixes**:
+  - Eliminado el componente obsoleto `EndpointRanking.tsx`.
+  - Corregidas las rutas relativas a Temas en `TemasPage.tsx` anteponiendo el prefijo `/api/v1` para evitar respuestas HTTP 404 del proxy de Vite.
+
+---
+
+## Archivos modificados/resumen (Nueva Sesión)
+
+### Backend (2 archivos nuevos, 6 modificados, 1 eliminado)
+```
+NUEVOS:
+  utils/PasswordUtils.java
+  DTO/requests/LoginRequestDTO.java
+
+MODIFICADOS:
+  model/nodos/Usuario.java
+  DTO/requests/UsuarioRequestDTO.java
+  DTO/response/UsuarioResponseDTO.java
+  repository/UsuarioRepository.java
+  service/UsuarioService.java
+  controller/UsuarioController.java
+  service/NoticiaService.java
+  resources/seed.cypher
+
+ELIMINADOS:
+  model/MetricaConsulta.java
+```
+
+### Frontend (2 archivos nuevos, 7 modificados, 1 eliminado)
+```
+NUEVOS:
+  context/AuthContext.tsx
+  pages/LoginPage.tsx
+
+MODIFICADOS:
+  App.tsx
+  components/Header.tsx
+  pages/RegisterPage.tsx
+  pages/UsuariosPage.tsx
+  pages/NoticiaDetail.tsx
+  pages/TemasPage.tsx
+
+ELIMINADOS:
+  components/EndpointRanking.tsx
+```
+

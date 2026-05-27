@@ -1,124 +1,76 @@
-# INICIAR PROYECTO
-
-FRONTEND
-
--> npm i
-
--> npm run dev
-
-BACKEND
-
-DOCKER -> 
-```
-docker run --name neo4j -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password123 -v neo4j_data:/data -d neo4j:5
-```
-- Puede ir a http://localhost:7474/browser/ para ver neo4j con una interfaz grafica.
-
-BASE DE DATOS
-
--> existe una carpeta script. Debes ejecutar ese script en la base de datos. Lo podes hacer directamente desde la interfaz grafica 
-
 # FakeGraph
 
-Sistema de detección de Fake News basado en grafos Neo4j. Modela noticias, fuentes, usuarios y sus relaciones para calcular un score de credibilidad.
+Sistema de detección de Fake News basado en grafos Neo4j. Modela noticias, fuentes, usuarios y sus relaciones para calcular un score de credibilidad en tiempo real utilizando analíticas complejas de grafos.
 
-## Stack tecnológico
+## Stack Tecnológico
 
 | Capa | Tecnología |
 |------|-----------|
 | Backend | Java 21, Spring Boot 3.4, Spring Data Neo4j 6 |
 | Base de datos | Neo4j 5.x (AuraDB o local) |
-| Frontend | React 19, Vite 6, TailwindCSS 3, D3.js 7 |
-| Herramienta | OpenCode (con comando personalizado `/prompt`) |
+| Frontend | React 19, TypeScript, Vite 6, TailwindCSS, D3.js |
 
-## Modelo de grafos
+## Modelo de Grafos (Esquema Neo4j)
 
 ### Nodos
 
-```
-Noticia {id, titulo, contenido, hashContenido, url, fechaPublicacion, scoreCredibilidad}
-Fuente  {id, nombre, dominio, verificada, puntajeHistorial}
-Usuario {id, nombre, seguidores, antiguedadDias}
-Autor   {id, nombre, handle}
-Tema    {id, nombre}
-Claim   {id, texto, hash}
+```cypher
+Noticia { id, titulo, url, autorNombre, fechaPublicacion, scoreCredibilidad }
+Fuente  { id, nombre, dominio, verificada }
+Usuario { id, nombre, email, scoreCredibilidad }
+Tema    { id, nombre }
 ```
 
 ### Relaciones
 
-```
-(Autor)-[:PUBLICA]->(Noticia)
-(Noticia)-[:PROVIENE_DE]->(Fuente)
-(Noticia)-[:PERTENECE_A]->(Tema)
-(Usuario)-[:COMPARTE {timestamp, plataforma}]->(Noticia)
-(Noticia)-[:CITA]->(Noticia)
-(Noticia)-[:AFIRMA]->(Claim)
-(Noticia)-[:DESMIENTE]->(Claim)
+```cypher
+(Usuario)-[:POSTEO]->(Noticia)              // Quién ingresó la noticia al sistema
+(Usuario)-[:COMPARTE]->(Noticia)            // Quién reposteó la noticia
+(Usuario)-[:VOTO {tipoVoto}]->(Noticia)     // tipoVoto: VERDADERO, FALSO, DUDOSO
+(Noticia)-[:PUBLICADA_EN]->(Fuente)         // Dominio de la URL (ej. reuters.com)
+(Noticia)-[:PERTENECE_A]->(Tema)            // Categoría temática
 ```
 
-### Pipeline de credibilidad
+## Características Principales
 
-```
-Noticia entrante
-  → ¿Fuente verificada? (+0.4 sí / +0.1 no)
-  → ¿Difusión masiva? (-0.3 si >100 shares)
-  → ¿Desmentido por fuentes confiables? (-0.5 si ≥3 desmentidos)
-  → Score final (0.0 - 1.0): 🟢 ≥0.6 | 🟡 0.3-0.6 | 🔴 <0.3
-```
+1. **Deduplicación por URL**: Si varios usuarios intentan subir la misma noticia, el sistema la unifica utilizando la operación `MERGE` de Cypher con una restricción de unicidad en la BD.
+2. **Sistema de Votación Dinámico**: Cada noticia posee un score de credibilidad que se recalcula instantáneamente basado en la proporción de votos (`VERDADERO` / `FALSO` / `DUDOSO`).
+3. **Barra de Credibilidad Tricolor**: Interfaz gráfica para evidenciar fácilmente el estado actual de la credibilidad de la noticia.
+4. **Analítica en Tiempo Real (Estadísticas)**: Un dashboard procesa las 8 consultas de análisis complejas establecidas en los requerimientos.
 
-## Arquitectura
+## Consultas de Demostración (Fase 6)
 
-```
-Neo4j (AuraDB) ← bolt → Spring Boot API (:8080) ← REST → React Frontend (:5173)
-                                      ↑
-                              DataSeeder automático
-```
+Para demostrar el poder de la base de datos orientada a Grafos, el proyecto incluye un script de demostración con 8 consultas complejas (Traversals, análisis de difusión, recomendaciones).
+Se encuentra en el archivo: `docs/demo_queries.cypher`
 
-## Endpoints REST
+**Las 8 consultas incluidas y funcionando en la API son:**
+1. Cargar/Deduplicar una Noticia (`MERGE`)
+2. Votar y recalcular Score de Credibilidad dinámicamente
+3. Identificar Noticias sospechosas con alta difusión (Controversiales)
+4. Listar Top Usuarios Más Activos (Influencers/Propagadores)
+5. Análisis de Fiabilidad de Fuentes de Información
+6. Tendencia Temática (Noticias agrupadas por Categoría y credibilidad)
+7. Traversal 1: **Recomendación Colaborativa** (Usuarios que votaron igual que tú)
+8. Traversal 2: **Cadena de Propagación** de Desinformación (Quién lo inició y sus saltos)
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/api/v1/noticias` | Listar noticias paginadas |
-| GET | `/api/v1/noticias/{id}` | Detalle de noticia |
-| POST | `/api/v1/noticias` | Alta de noticia |
-| GET | `/api/v1/noticias/{id}/credibilidad` | Score desglosado |
-| GET | `/api/v1/noticias/{id}/difusion` | Árbol de comparticiones |
-| GET | `/api/v1/noticias/sospechosas` | Noticias de fuentes no verificadas con alta difusión |
-| GET | `/api/v1/noticias/credibilidad` | Todas con score calculado |
-| GET | `/api/v1/noticias/no-verificadas` | Paginado de fuentes no verificadas |
-| POST | `/api/v1/fuentes` | Alta de fuente |
-| PUT | `/api/v1/fuentes/{id}/verificar` | Marcar fuente como verificada |
-| GET | `/api/v1/fuentes/no-verificadas` | Fuentes no verificadas |
-| GET | `/api/v1/grafos/comunidades` | Comunidades detectadas (GDS Louvain) |
+## Cómo Ejecutar
 
-## Cómo ejecutar
-
-### 1. Base de datos (Neo4j)
-
-**Opción A — AuraDB (cloud)**
-Crear instancia gratis en https://console.neo4j.io. Configurar variables de entorno:
+### 1. Base de datos (Neo4j Docker)
 
 ```bash
-export NEO4J_URI=neo4j+s://xxxx.databases.neo4j.io
-export NEO4J_USERNAME=neo4j
-export NEO4J_PASSWORD=tu-password
+docker run --name neo4j -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password123 -v neo4j_data:/data -d neo4j:5
 ```
+Se puede visualizar en http://localhost:7474/browser/
 
-**Opción B — Docker (local)**
-
-```bash
-docker run -d --name neo4j -p 7474:7474 -p 7687:7687 \
-  -e NEO4J_AUTH=neo4j/password neo4j:5
-```
+> **Nota:** La aplicación utiliza `neo4j-migrations`. Al arrancar el backend por primera vez, se inyectarán las restricciones (`constraints`) y los datos de prueba iniciales (`seed data`) automáticamente.
 
 ### 2. Backend (Spring Boot)
 
 ```bash
 cd backend
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
-
-El `DataSeeder` aplica schema (constraints, índices) y seed data automáticamente al iniciar si `app.seed-data: true`.
+(O correr desde IntelliJ IDEA / VS Code en Java 21)
 
 ### 3. Frontend (React)
 
@@ -127,74 +79,4 @@ cd frontend
 npm install
 npm run dev
 ```
-
 Abrir `http://localhost:5173`.
-
-## Comando `/prompt` para OpenCode
-
-Se creó un comando personalizado en `.opencode/commands/prompt.md` que optimiza prompts siguiendo las mejores prácticas de Anthropic.
-
-**Uso:**
-```
-/prompt <prompt a optimizar>
-```
-
-El comando:
-1. Analiza el prompt original contra 10 mejores prácticas de Anthropic
-2. Asigna rol, estructura XML, contexto, ejemplos y formato de salida
-3. Devuelve el prompt optimizado con explicación de cambios
-
-### Mejores prácticas de Anthropic aplicadas
-
-Las reglas de prompting en las que se basa el comando `/prompt` están documentadas en [Claude Prompting Best Practices](https://platform.claude.com/docs/es/build-with-claude/prompt-engineering/claude-prompting-best-practices):
-
-| # | Práctica | Descripción |
-|---|----------|-------------|
-| 1 | Claridad y dirección | Instrucciones específicas, formato de salida definido |
-| 2 | Contexto | Explicar el "por qué" detrás de las instrucciones |
-| 3 | Rol | Asignar un rol claro al modelo |
-| 4 | Estructura XML | Usar `<instructions>`, `<context>`, `<input>` para organizar |
-| 5 | Ejemplos | Incluir ejemplos relevantes en `<example>` |
-| 6 | Formato de salida | Decir qué HACER, no qué NO hacer |
-| 7 | Verbosidad | Controlar si la respuesta debe ser concisa o detallada |
-| 8 | Razonamiento | Indicar "piensa paso a paso" en tareas complejas |
-| 9 | Positivo sobre negativo | Reformular "no hagas X" como "haz Y" |
-| 10 | Acción explícita | No dejar ambigüedad sobre si debe actuar o solo sugerir |
-
-## Estructura del proyecto
-
-```
-FakeGraph/
-├── backend/                           # Spring Boot
-│   ├── pom.xml
-│   └── src/main/java/com/fakegraph/
-│       ├── FakeGraphApplication.java
-│       ├── model/                     # Noticia, Fuente, Usuario, Autor, Tema, Claim, Comparte
-│       ├── repository/                # NoticiaRepo, FuenteRepo, UsuarioRepo + DTOs
-│       ├── service/                   # NoticiaService, FuenteService, ComunidadService
-│       ├── controller/                # NoticiaController, FuenteController, ComunidadController
-│       └── config/                    # WebConfig, Neo4jConfig, DataSeeder, GlobalExceptionHandler
-├── frontend/                          # Vite + React
-│   ├── package.json
-│   └── src/
-│       ├── App.jsx                    # /, /noticia/:id, /fuentes
-│       ├── components/                # Header, NoticiaCard, CredibilidadChart, GrafoVisualization
-│       └── pages/                     # Dashboard, NoticiaDetail, FuentesPage
-├── scripts/
-│   └── seed.cypher                    # Seed data original (copia de seguridad)
-└── .opencode/commands/
-    └── prompt.md                      # Comando personalizado /prompt
-```
-
-## Correcciones aplicadas durante el desarrollo
-
-1. **YAML con bloques duplicados**: Dos bloques `spring:` en `application.yml` — el segundo pisaba la config de Neo4j.
-2. **Seed en ruta incorrecta**: `seed.cypher` estaba en `scripts/` pero el `DataSeeder` lo buscaba en `classpath:`.
-3. **Seed no idempotente**: Cambiado de `CREATE` a `MERGE` + `SET` para evitar duplicados al reiniciar.
-4. **Faltaban constraints**: Agregadas unique constraints sobre `id` para todos los labels de nodo.
-5. **Custom queries con columnas extra**: `RETURN n, f, shares` rompía el mapeo de SDN 6. Cambiado a solo `RETURN n`.
-6. **Faltaba `@Transactional`**: Los servicios de lectura no tenían `@Transactional(readOnly = true)`, causando errores al cargar relaciones.
-7. **Serialización cíclica**: Agregados `@JsonIgnoreProperties` en relaciones bidireccionales (Noticia ↔ Claim).
-8. **Sin manejo de errores**: Creado `GlobalExceptionHandler` con `@RestControllerAdvice` para devolver errores legibles.
-9. **Código roto en ComunidadService**: El `finally` hacía una llamada inválida al repository.
-10. **Import incorrecto**: `Neo4jClientException` no existe en ese paquete — eliminado del handler.

@@ -5,6 +5,7 @@ import CredibilidadChart from '../components/CredibilidadChart'
 import GrafoVisualization, { GrafoNode, GrafoLink } from '../components/GrafoVisualization'
 import StatsCard from '../components/StatsCard'
 import { CardSkeleton } from '../components/Skeleton'
+import { apiFetch } from '../utils/Fetch'
 
 interface Stats {
   noticias: number | null
@@ -23,9 +24,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      fetch('noticias?page=0&size=1').then(r => r.json()),
-      fetch('fuentes').then(r => r.json()),
-      fetch('usuarios').then(r => r.json()),
+      apiFetch<any>('/api/noticias?page=0&size=1').catch(() => ({ totalElements: 0 })),
+      apiFetch<any[]>('/api/fuentes').catch(() => []),
+      apiFetch<any[]>('/api/usuarios').catch(() => []),
     ])
       .then(([n, f, u]) => {
         setStats({ noticias: n.totalElements ?? 0, fuentes: f.length, usuarios: u.length })
@@ -37,11 +38,7 @@ export default function Dashboard() {
   useEffect(() => {
     setLoading(true)
     setError(null)
-    fetch(`/api/v1/noticias?page=${page}&size=12&sortBy=scoreCredibilidad&direction=asc`)
-      .then(res => {
-        if (!res.ok) throw new Error(`Error ${res.status}`)
-        return res.json()
-      })
+    apiFetch<any>(`/api/noticias?page=${page}&size=12&sortBy=scoreCredibilidad&direction=asc`)
       .then(data => {
         setNoticias(data.content || [])
         setTotalPages(data.totalPages || 1)

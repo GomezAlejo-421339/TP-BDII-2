@@ -7,6 +7,7 @@ import com.fakegraph.repository.TemaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -14,11 +15,9 @@ import java.util.List;
 public class TemaService {
     private final TemaRepository repository;
 
-    public TemaResponseDTO crete(TemaRequestDTO request) {
-        Tema t = new Tema();
-        t.setNombre(request.getNombre());
-
-        Tema tema = repository.save(t);
+    @Transactional
+    public TemaResponseDTO create(TemaRequestDTO request) {
+        Tema tema = repository.mergeByNombre(request.getNombre());
         return toTemaResponseDTO(tema);
     }
 

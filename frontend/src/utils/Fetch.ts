@@ -2,9 +2,10 @@ const BASE_URL = 'http://localhost:8080';
 
 export async function apiFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
   // Ensure we send JSON and accept JSON responses by default
+  const userId = localStorage.getItem('userId');
   const defaultHeaders: HeadersInit = {
     'Accept': 'application/json',
-    // If a body is present and Content-Type not set, assume JSON
+    ...(userId ? { 'X-User-Id': userId } : {}),
     ...(options.body && !('Content-Type' in (options.headers || {}))
       ? { 'Content-Type': 'application/json' }
       : {}),

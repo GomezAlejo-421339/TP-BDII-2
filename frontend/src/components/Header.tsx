@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronDownIcon, MagnifyingGlassIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
+import CrearNoticiaModal from './CrearNoticiaModal'
+import { useAuth } from '../context/AuthContext'
+import { useToast } from './ToastProvider'
+
 interface Entidad {
   label: string
   path: string
@@ -9,7 +13,6 @@ interface Entidad {
 
 const entidades: Entidad[] = [
   { label: 'Usuarios', path: '/usuarios' },
-  { label: 'Autores', path: '/autores' },
   { label: 'Temas', path: '/temas' },
   { label: 'Fuentes', path: '/fuentes' },
 ]
@@ -18,7 +21,11 @@ export default function Header() {
   const location = useLocation()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [search, setSearch] = useState('')
+  
+  const { user, logout, isAuthenticated } = useAuth()
+  const addToast = useToast()
 
   const isActive = (path: string) => location.pathname === path
 
@@ -81,9 +88,54 @@ export default function Header() {
           </div>
         </form>
 
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-          {mobileOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+            {mobileOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+          </button>
+          
+          <button 
+            onClick={() => {
+              if (isAuthenticated) {
+                setShowModal(true)
+              } else {
+                addToast('Debes iniciar sesión para publicar una noticia', 'warning')
+                window.location.href = '/login'
+              }
+            }} 
+            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-xl shadow-sm hover:bg-blue-700 transition-colors"
+          >
+            Publicar Noticia
+          </button>
+
+          {/* Acciones de Usuario (Desktop) */}
+          <div className="hidden md:flex items-center gap-2 pl-2 border-l border-gray-200">
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100" title={user.email}>
+                  👋 {user.nombre}
+                </span>
+                <button 
+                  onClick={() => {
+                    logout()
+                    addToast('Sesión cerrada con éxito', 'info')
+                  }} 
+                  className="px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-xl transition-all"
+                >
+                  Salir
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login" className="px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50/50 rounded-xl transition-all">
+                  Ingresar
+                </Link>
+                <Link to="/register" className="px-3 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow-sm transition-all">
+                  Registrarse
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {mobileOpen && (
@@ -96,12 +148,56 @@ export default function Header() {
           ))}
           <Link to="/stats" onClick={() => setMobileOpen(false)}
             className={`block px-3 py-2 text-sm font-medium rounded-lg ${isActive('/stats') ? 'bg-gray-100' : ''}`}>Estadísticas</Link>
+          
+          {/* Sección de Usuario Móvil */}
+          <div className="pt-2 border-t border-gray-100 space-y-2">
+            {isAuthenticated && user ? (
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-700 px-3 py-1.5">
+                  👋 {user.nombre} ({user.email})
+                </div>
+                <button 
+                  onClick={() => {
+                    logout()
+                    setMobileOpen(false)
+                    addToast('Sesión cerrada con éxito', 'info')
+                  }} 
+                  className="w-full text-left px-3 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-all"
+                >
+                  Cerrar Sesión
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <Link to="/login" onClick={() => setMobileOpen(false)}
+                  className="text-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all">
+                  Ingresar
+                </Link>
+                <Link to="/register" onClick={() => setMobileOpen(false)}
+                  className="text-center px-3 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all">
+                  Registrarse
+                </Link>
+              </div>
+            )}
+          </div>
+          
           <form onSubmit={handleSearch} className="pt-2">
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Buscar noticia por ID..."
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl" />
           </form>
         </div>
+      )}
+
+      {showModal && (
+        <CrearNoticiaModal 
+          onClose={() => setShowModal(false)} 
+          onSuccess={() => {
+            if (isActive('/')) {
+              window.location.reload()
+            }
+          }} 
+        />
       )}
     </header>
   )

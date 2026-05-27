@@ -7,13 +7,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
+
+import com.fakegraph.exception.ResourceNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+        log.warn("Recurso no encontrado: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "error", "Not Found",
+                "mensaje", ex.getMessage(),
+                "timestamp", ZonedDateTime.now().toString()
+        ));
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
@@ -22,7 +34,7 @@ public class GlobalExceptionHandler {
                 "error", "Error interno del servidor",
                 "mensaje", ex.getMessage() != null ? ex.getMessage() : "Sin detalle",
                 "tipo", ex.getClass().getSimpleName(),
-                "timestamp", LocalDateTime.now().toString()
+                "timestamp", ZonedDateTime.now().toString()
         ));
     }
 }

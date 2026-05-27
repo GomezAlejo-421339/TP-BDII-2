@@ -25,7 +25,7 @@ export default function TemasPage() {
   const load = async () => {
     setLoading(true)
     try {
-      const data = await apiFetch<Tema[]>('/temas');
+      const data = await apiFetch<Tema[]>('/api/v1/temas');
       setTemas(data);
     } catch {
       // keep loading false on error as well
@@ -50,7 +50,7 @@ export default function TemasPage() {
       : { nombre: form.nombre }
     console.log(body.nombre)
     const method = isEdit ? 'PUT' : 'POST'
-    const url = isEdit ? `/temas/${form.id}` : '/temas'
+    const url = isEdit ? `/api/v1/temas/${form.id}` : '/api/v1/temas'
     try {
       await apiFetch<any>(url, { method, body: JSON.stringify(body) })
       addToast(method === 'POST' ? 'Tema creado' : 'Tema actualizado')
@@ -64,7 +64,7 @@ export default function TemasPage() {
 
   const handleDelete = async (t: Tema) => {
     try {
-      await apiFetch<void>(`/temas/${t.id}`, { method: 'DELETE' })
+      await apiFetch<void>(`/api/v1/temas/${t.id}`, { method: 'DELETE' })
       addToast('Tema eliminado')
       load()
     } catch {

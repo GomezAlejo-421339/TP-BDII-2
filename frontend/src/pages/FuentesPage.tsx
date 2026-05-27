@@ -38,13 +38,15 @@ export default function FuentesPage() {
     e.preventDefault()
     if (!form) return
     setSaving(true)
-    const body = {
-      id: form.id, nombre: form.nombre, dominio: form.dominio,
+    const isEdit = fuentes.some(f => f.id === form.id)
+    const body: any = {
+      nombre: form.nombre, dominio: form.dominio,
       verificada: form.verificada,
       puntajeHistorial: form.puntajeHistorial !== '' ? parseFloat(form.puntajeHistorial as string) : null,
     }
-    const method = fuentes.some(f => f.id === form.id) ? 'PUT' : 'POST'
-    const url = method === 'PUT' ? `/api/v1/fuentes/${form.id}` : '/api/v1/fuentes'
+    if (isEdit) body.id = form.id
+    const method = isEdit ? 'PUT' : 'POST'
+    const url = isEdit ? `/api/v1/fuentes/${form.id}` : '/api/v1/fuentes'
     try {
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!res.ok) throw new Error('Error al guardar')
@@ -123,11 +125,13 @@ export default function FuentesPage() {
             <h2 className="text-lg font-bold text-gray-900">
               {fuentes.some(f => f.id === form.id) ? 'Editar Fuente' : 'Nueva Fuente'}
             </h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">ID</label>
-              <input value={form.id || ''} onChange={e => setForm({ ...form, id: e.target.value })} required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
+            {fuentes.some(f => f.id === form.id) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">ID</label>
+                <input value={form.id || ''} disabled
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed" />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Nombre</label>
               <input value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} required

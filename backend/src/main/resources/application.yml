@@ -12,10 +12,15 @@ spring:
 server:
   port: 8080
 
-app:
-  seed-data: true
+# Neo4j Migrations: aplica automáticamente los archivos .cypher al iniciar la app.
+# Los archivos deben seguir la convención: V001__nombre.cypher, V002__nombre.cypher, etc.
+# Una vez aplicada una migración, no se vuelve a ejecutar (se registra en el grafo).
+org.neo4j.migrations:
+  locations-to-scan: classpath:neo4j/migrations
+  transaction-mode: PER_STATEMENT
 
 logging:
   level:
     com.fakegraph: INFO
     org.springframework.data.neo4j: INFO
+    ac.simons.neo4j.migrations: INFO

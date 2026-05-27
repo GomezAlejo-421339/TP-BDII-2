@@ -2,19 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 
-export interface Noticia {
-  id: string | number
-  titulo: string
-  contenido?: string
-  scoreCredibilidad?: number | null
-  fuente?: {
-    nombre?: string | null
-  } | null
-  tema?: {
-    nombre?: string | null
-  } | null
-  fechaPublicacion?: string | number | null
-}
+import { Noticia } from '../types/Noticia'
 
 export interface NoticiaCardProps {
   noticia: Noticia
