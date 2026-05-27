@@ -48,6 +48,7 @@ export default function TemasPage() {
     const body = isEdit
       ? { id: form.id, nombre: form.nombre }
       : { nombre: form.nombre }
+    console.log(body.nombre)
     const method = isEdit ? 'PUT' : 'POST'
     const url = isEdit ? `/temas/${form.id}` : '/temas'
     try {
