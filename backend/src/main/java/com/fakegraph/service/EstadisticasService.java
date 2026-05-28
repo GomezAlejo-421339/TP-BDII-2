@@ -58,7 +58,7 @@ public class EstadisticasService {
     public List<Map<String, Object>> getNoticiasPorTema() {
         return (List<Map<String, Object>>) neo4jClient.query(
                 "MATCH (n:Noticia)-[:PERTENECE_A]->(t:Tema) " +
-                "RETURN t.nombre AS name, count(n) AS value " +
+                "RETURN t.nombre AS name, count(n) AS value, avg(n.scoreCredibilidad) AS credibilidad " +
                 "ORDER BY value DESC")
                 .fetch().all();
     }

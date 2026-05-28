@@ -25,9 +25,9 @@ export default function CredibilidadDonut({ data, loading }: CredibilidadDonutPr
 
     const sorted = [...data].sort((a, b) => b.cantidad - a.cantidad)
 
-    const width = 340
+    const width = 420
     const height = 310
-    const radius = Math.min(width, height) / 2 - 50
+    const radius = Math.min(width, height) / 2 - 60
 
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
@@ -111,18 +111,18 @@ export default function CredibilidadDonut({ data, loading }: CredibilidadDonutPr
       .attr('transform', `translate(0, ${height - 30})`)
 
     const legendData = sorted.filter(d => d.cantidad > 0)
-    const itemWidth = 115
+    const itemWidth = 130
     const totalWidth = legendData.length * itemWidth
     const startX = Math.max(0, (width - totalWidth) / 2)
 
     legendData.forEach((d, i) => {
       const lx = startX + i * itemWidth
       const lg = legendG.append('g').attr('transform', `translate(${lx}, 0)`)
-      lg.append('circle').attr('r', 6).attr('fill', COLORS[d.rango] || '#6b7280')
+      lg.append('rect').attr('width', 12).attr('height', 12).attr('rx', 3).attr('fill', COLORS[d.rango] || '#6b7280')
       lg.append('text')
-        .attr('x', 14).attr('y', 5)
+        .attr('x', 20).attr('y', 10)
         .attr('font-size', '12px')
-        .attr('fill', '#64748b')
+        .attr('fill', '#374151')
         .text(`${d.rango}: ${d.cantidad} (${d.porcentaje}%)`)
     })
 
@@ -132,7 +132,7 @@ export default function CredibilidadDonut({ data, loading }: CredibilidadDonutPr
 
   return (
     <div className="relative bg-white border border-gray-200 rounded-xl p-4 shadow-card">
-      <svg ref={svgRef} width="100%" height="310" viewBox="0 0 340 310" />
+      <svg ref={svgRef} width="100%" height="310" viewBox="0 0 420 310" />
       <div ref={tooltipRef} className="fixed pointer-events-none hidden bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg z-50" />
       {(!data || data.length === 0) && (
         <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400">

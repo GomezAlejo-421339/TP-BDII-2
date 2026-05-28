@@ -51,6 +51,7 @@ MERGE (t3:Tema {nombre: 'Economía'});
 MERGE (t4:Tema {nombre: 'Tecnología'});
 MERGE (t5:Tema {nombre: 'Ciencia'});
 MERGE (t6:Tema {nombre: 'Sociedad'});
+MERGE (t7:Tema {nombre: 'Deportes'});
 
 // =============================================================================
 // 3. USUARIOS DE PRUEBA
@@ -137,6 +138,76 @@ SET n10.titulo = 'Inteligencia Artificial revoluciona el diagnóstico médico',
     n10.fechaPublicacion = datetime('2026-05-20T10:00:00'),
     n10.scoreCredibilidad = 0.78;
 
+// Deportes
+MERGE (n11:Noticia {url: 'https://reuters.com/deportes/2026/mundial-clubes-campeon'})
+SET n11.titulo = 'Mundial de Clubes: el campeonato que redefine el futbol global',
+    n11.autorNombre = 'Reuters Sports',
+    n11.fechaPublicacion = datetime('2026-05-18T14:00:00'),
+    n11.scoreCredibilidad = 0.85;
+
+// Política — noticia equilibrada
+MERGE (n12:Noticia {url: 'https://elpais.com/politica/2026/nueva-ley-educacion'})
+SET n12.titulo = 'El Congreso debate la nueva ley de educación',
+    n12.autorNombre = 'Redacción El País',
+    n12.fechaPublicacion = datetime('2026-05-19T08:00:00'),
+    n12.scoreCredibilidad = 0.70;
+
+// Sociedad — rumor falso
+MERGE (n13:Noticia {url: 'https://lapostadiaria.com/toque-queda-gobierno'})
+SET n13.titulo = 'Gobierno prepara toque de queda nacional secreto',
+    n13.autorNombre = null,
+    n13.fechaPublicacion = datetime('2026-05-21T22:00:00'),
+    n13.scoreCredibilidad = 0.20;
+
+// Tecnología — fake alarmista
+MERGE (n14:Noticia {url: 'https://noticiasya.com/facebook-roba-datos-voz'})
+SET n14.titulo = 'Facebook graba conversaciones sin permiso masivamente',
+    n14.autorNombre = null,
+    n14.fechaPublicacion = datetime('2026-05-22T12:00:00'),
+    n14.scoreCredibilidad = 0.10;
+
+// Ciencia — confiable
+MERGE (n15:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'})
+SET n15.titulo = 'La NASA confirma agua líquida en Marte',
+    n15.autorNombre = 'BBC Science',
+    n15.fechaPublicacion = datetime('2026-05-23T10:00:00'),
+    n15.scoreCredibilidad = 0.90;
+
+// Economía — dudosa (sensacionalista)
+MERGE (n16:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'})
+SET n16.titulo = 'Economista advierte: colapso del dolar es inminente',
+    n16.autorNombre = 'Redacción Infobae',
+    n16.fechaPublicacion = datetime('2026-05-24T09:00:00'),
+    n16.scoreCredibilidad = 0.45;
+
+// Salud — confiable
+MERGE (n17:Noticia {url: 'https://apnews.com/salud/2026/ejercicio-memoria'})
+SET n17.titulo = 'Estudio demuestra que el ejercicio mejora la memoria',
+    n17.autorNombre = 'AP Health',
+    n17.fechaPublicacion = datetime('2026-05-25T07:00:00'),
+    n17.scoreCredibilidad = 0.80;
+
+// Sociedad — fake conspiranoico
+MERGE (n18:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'})
+SET n18.titulo = 'Chemtrails: el gobierno siembra sustancias para control mental',
+    n18.autorNombre = null,
+    n18.fechaPublicacion = datetime('2026-05-26T06:00:00'),
+    n18.scoreCredibilidad = 0.15;
+
+// Tecnología — confiable
+MERGE (n19:Noticia {url: 'https://bbc.com/tecnologia/2026/auto-electrico-china'})
+SET n19.titulo = 'China lanza el auto eléctrico más barato del mercado',
+    n19.autorNombre = 'BBC Tech',
+    n19.fechaPublicacion = datetime('2026-05-27T10:00:00'),
+    n19.scoreCredibilidad = 0.75;
+
+// Política — dudosa
+MERGE (n20:Noticia {url: 'https://infobae.com/politica/2026/diputados-aumento-sueldo'})
+SET n20.titulo = 'Diputados se aumentan el sueldo un 300% en sesión secreta',
+    n20.autorNombre = null,
+    n20.fechaPublicacion = datetime('2026-05-27T18:00:00'),
+    n20.scoreCredibilidad = 0.50;
+
 // =============================================================================
 // 5. RELACIONES: Noticia → Fuente (PUBLICADA_EN)
 // =============================================================================
@@ -178,6 +249,46 @@ MATCH (n:Noticia {url: 'https://elconfidente.net/chip-5g-enfermedades'}),
 MERGE (n)-[:PUBLICADA_EN]->(f);
 
 MATCH (n:Noticia {url: 'https://infobae.com/tecnologia/2026/ia-diagnostico-medico'}),
+      (f:Fuente {dominio: 'infobae.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://reuters.com/deportes/2026/mundial-clubes-campeon'}),
+      (f:Fuente {dominio: 'reuters.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://elpais.com/politica/2026/nueva-ley-educacion'}),
+      (f:Fuente {dominio: 'elpais.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://lapostadiaria.com/toque-queda-gobierno'}),
+      (f:Fuente {dominio: 'lapostadiaria.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://noticiasya.com/facebook-roba-datos-voz'}),
+      (f:Fuente {dominio: 'noticiasya.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'}),
+      (f:Fuente {dominio: 'bbc.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'}),
+      (f:Fuente {dominio: 'infobae.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://apnews.com/salud/2026/ejercicio-memoria'}),
+      (f:Fuente {dominio: 'apnews.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'}),
+      (f:Fuente {dominio: 'elconfidente.net'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://bbc.com/tecnologia/2026/auto-electrico-china'}),
+      (f:Fuente {dominio: 'bbc.com'})
+MERGE (n)-[:PUBLICADA_EN]->(f);
+
+MATCH (n:Noticia {url: 'https://infobae.com/politica/2026/diputados-aumento-sueldo'}),
       (f:Fuente {dominio: 'infobae.com'})
 MERGE (n)-[:PUBLICADA_EN]->(f);
 
@@ -225,6 +336,46 @@ MATCH (n:Noticia {url: 'https://infobae.com/tecnologia/2026/ia-diagnostico-medic
       (t:Tema {nombre: 'Tecnología'})
 MERGE (n)-[:PERTENECE_A]->(t);
 
+MATCH (n:Noticia {url: 'https://reuters.com/deportes/2026/mundial-clubes-campeon'}),
+      (t:Tema {nombre: 'Deportes'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://elpais.com/politica/2026/nueva-ley-educacion'}),
+      (t:Tema {nombre: 'Política'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://lapostadiaria.com/toque-queda-gobierno'}),
+      (t:Tema {nombre: 'Sociedad'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://noticiasya.com/facebook-roba-datos-voz'}),
+      (t:Tema {nombre: 'Tecnología'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'}),
+      (t:Tema {nombre: 'Ciencia'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'}),
+      (t:Tema {nombre: 'Economía'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://apnews.com/salud/2026/ejercicio-memoria'}),
+      (t:Tema {nombre: 'Salud'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'}),
+      (t:Tema {nombre: 'Sociedad'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://bbc.com/tecnologia/2026/auto-electrico-china'}),
+      (t:Tema {nombre: 'Tecnología'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
+MATCH (n:Noticia {url: 'https://infobae.com/politica/2026/diputados-aumento-sueldo'}),
+      (t:Tema {nombre: 'Política'})
+MERGE (n)-[:PERTENECE_A]->(t);
+
 // =============================================================================
 // 7. RELACIONES: Usuario → Noticia (POSTEO)
 // Quién cargó la noticia en la plataforma FakeGraph.
@@ -269,6 +420,46 @@ MERGE (u)-[:POSTEO {fecha: datetime('2026-05-15T17:00:00')}]->(n);
 MATCH (u:Usuario {email: 'lucia@example.com'}),
       (n:Noticia {url: 'https://infobae.com/tecnologia/2026/ia-diagnostico-medico'})
 MERGE (u)-[:POSTEO {fecha: datetime('2026-05-20T11:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://reuters.com/deportes/2026/mundial-clubes-campeon'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-18T15:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://elpais.com/politica/2026/nueva-ley-educacion'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-19T09:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://lapostadiaria.com/toque-queda-gobierno'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-21T23:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://noticiasya.com/facebook-roba-datos-voz'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-22T13:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-23T11:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'lucia@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-24T10:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://apnews.com/salud/2026/ejercicio-memoria'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-25T08:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-26T07:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/tecnologia/2026/auto-electrico-china'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-27T11:00:00')}]->(n);
+
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/politica/2026/diputados-aumento-sueldo'})
+MERGE (u)-[:POSTEO {fecha: datetime('2026-05-27T19:00:00')}]->(n);
 
 // =============================================================================
 // 8. RELACIONES: Usuario → Noticia (VOTO)
@@ -371,6 +562,101 @@ MATCH (u:Usuario {email: 'maria@example.com'}),
 MERGE (u)-[v:VOTO]->(n)
 SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-21T12:00:00'), v.comentario = 'Infobae no siempre es confiable en tech.';
 
+// Mundial de Clubes — confiable
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://reuters.com/deportes/2026/mundial-clubes-campeon'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-18T16:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://reuters.com/deportes/2026/mundial-clubes-campeon'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-18T17:00:00'), v.comentario = null;
+
+// Nueva ley educación — mayormente confiable
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://elpais.com/politica/2026/nueva-ley-educacion'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-19T10:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'lucia@example.com'}),
+      (n:Noticia {url: 'https://elpais.com/politica/2026/nueva-ley-educacion'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-19T11:00:00'), v.comentario = 'Bien explicado.';
+
+// Toque de queda — falso
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://lapostadiaria.com/toque-queda-gobierno'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-22T08:00:00'), v.comentario = 'Desmentido por el gobierno.';
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://lapostadiaria.com/toque-queda-gobierno'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-22T09:00:00'), v.comentario = null;
+
+// Facebook graba — falso
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://noticiasya.com/facebook-roba-datos-voz'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-22T14:00:00'), v.comentario = 'Clickbait sin pruebas.';
+MATCH (u:Usuario {email: 'lucia@example.com'}),
+      (n:Noticia {url: 'https://noticiasya.com/facebook-roba-datos-voz'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-22T15:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://noticiasya.com/facebook-roba-datos-voz'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-22T16:00:00'), v.comentario = 'Lo escuche de un amigo.';
+
+// Agua en Marte — confiable
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-23T12:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-23T13:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'DUDOSO', v.fecha = datetime('2026-05-23T14:00:00'), v.comentario = 'Espero confirmacion independiente.';
+
+// Colapso dolar — dudoso
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'DUDOSO', v.fecha = datetime('2026-05-24T11:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-24T12:00:00'), v.comentario = 'Se viene el default.';
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-24T13:00:00'), v.comentario = 'Sensacionalismo economico.';
+
+// Ejercicio y memoria — confiable
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://apnews.com/salud/2026/ejercicio-memoria'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-25T09:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'lucia@example.com'}),
+      (n:Noticia {url: 'https://apnews.com/salud/2026/ejercicio-memoria'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-25T10:00:00'), v.comentario = null;
+
+// Chemtrails — falso
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-26T10:00:00'), v.comentario = 'Teoria conspirativa sin base.';
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-26T11:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-26T12:00:00'), v.comentario = 'Se ven los rastros en el cielo.';
+
+// Auto electrico — confiable
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/tecnologia/2026/auto-electrico-china'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-27T12:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'lucia@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/tecnologia/2026/auto-electrico-china'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-27T13:00:00'), v.comentario = 'Lindo auto.';
+
+// Diputados aumento — dudoso
+MATCH (u:Usuario {email: 'ana@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/politica/2026/diputados-aumento-sueldo'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'DUDOSO', v.fecha = datetime('2026-05-27T20:00:00'), v.comentario = null;
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/politica/2026/diputados-aumento-sueldo'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'VERDADERO', v.fecha = datetime('2026-05-27T20:30:00'), v.comentario = 'Todo el poder para ellos.';
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/politica/2026/diputados-aumento-sueldo'})
+MERGE (u)-[v:VOTO]->(n) SET v.tipoVoto = 'FALSO', v.fecha = datetime('2026-05-27T21:00:00'), v.comentario = 'Fuente no confiable.';
+
 // =============================================================================
 // 9. RELACIONES: Usuario → Noticia (COMPARTE / Reposteo)
 // Difusión de noticias. Permite trazar la cadena de propagación.
@@ -405,3 +691,28 @@ MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-21T13:00:00'), plataforma: 'w
 MATCH (u:Usuario {email: 'lucia@example.com'}),
       (n:Noticia {url: 'https://infobae.com/tecnologia/2026/ia-diagnostico-medico'})
 MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-21T14:00:00'), plataforma: 'web'}]->(n);
+
+// Noticias nuevas compartidas
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://reuters.com/deportes/2026/mundial-clubes-campeon'})
+MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-18T18:00:00'), plataforma: 'web'}]->(n);
+
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://lapostadiaria.com/toque-queda-gobierno'})
+MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-22T10:00:00'), plataforma: 'web'}]->(n);
+
+MATCH (u:Usuario {email: 'pedro@example.com'}),
+      (n:Noticia {url: 'https://elconfidente.net/chemtrails-control-mental'})
+MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-26T13:00:00'), plataforma: 'web'}]->(n);
+
+MATCH (u:Usuario {email: 'carlos@example.com'}),
+      (n:Noticia {url: 'https://infobae.com/economia/2026/colapso-dolar-inminente'})
+MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-24T14:00:00'), plataforma: 'web'}]->(n);
+
+MATCH (u:Usuario {email: 'maria@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/ciencia/2026/marte-agua-liquida'})
+MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-23T15:00:00'), plataforma: 'web'}]->(n);
+
+MATCH (u:Usuario {email: 'lucia@example.com'}),
+      (n:Noticia {url: 'https://bbc.com/tecnologia/2026/auto-electrico-china'})
+MERGE (u)-[:COMPARTE {timestamp: datetime('2026-05-27T14:00:00'), plataforma: 'web'}]->(n);

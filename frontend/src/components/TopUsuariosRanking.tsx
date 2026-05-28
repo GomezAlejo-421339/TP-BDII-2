@@ -1,10 +1,8 @@
 import React from 'react'
-import { UserGroupIcon } from '@heroicons/react/24/outline'
 
 export interface TopUsuariosRankingItem {
   nombre: string
   totalShares: number
-  seguidores: number
 }
 
 export interface TopUsuariosRankingProps {
@@ -41,10 +39,6 @@ export default function TopUsuariosRanking({ data, loading }: TopUsuariosRanking
                         : 'linear-gradient(90deg, #93c5fd, #a5b4fc)'
                     }}
                   />
-                </div>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <UserGroupIcon className="w-3 h-3 text-gray-400" />
-                  <span className="text-[10px] text-gray-400">{u.seguidores} seguidores</span>
                 </div>
               </div>
             </div>

@@ -55,13 +55,13 @@ export default function EstadisticasPage() {
         })
         .catch(() => []),
       // Fetch raw theme data and map to TemaBarChartItem shape
-      apiFetch<Array<{ name: string; value: number }>>('/api/estadisticas/por-tema')
+      apiFetch<Array<{ name: string; value: number; credibilidad: number }>>('/api/estadisticas/por-tema')
         .then((raw) => {
           if (!raw) return [] as TemaBarChartItem[];
           return raw.map((item) => ({
             tema: item.name,
             total: item.value,
-            credibilidadPromedio: 0,
+            credibilidadPromedio: item.credibilidad,
           }));
         })
         .catch(() => []),
@@ -72,7 +72,6 @@ export default function EstadisticasPage() {
           return raw.map((item) => ({
             nombre: item.usuario,
             totalShares: item.cantidadCompartida,
-            seguidores: 0, // default value, adjust if provided by backend
           }));
         })
         .catch(() => []),

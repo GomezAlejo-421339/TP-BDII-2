@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { NewspaperIcon, ShieldCheckIcon, UserGroupIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import NoticiaCard, { Noticia } from '../components/NoticiaCard'
+import NoticiaCard from '../components/NoticiaCard'
+import type { Noticia } from '../types/Noticia'
 import CredibilidadChart from '../components/CredibilidadChart'
-import GrafoVisualization, { GrafoNode, GrafoLink } from '../components/GrafoVisualization'
+import GrafoSimple from '../components/GrafoSimple'
+
 import StatsCard from '../components/StatsCard'
 import { CardSkeleton } from '../components/Skeleton'
 import { apiFetch } from '../utils/Fetch'
@@ -49,24 +51,6 @@ export default function Dashboard() {
         setLoading(false)
       })
   }, [page])
-
-  const grafoNodes = noticias.flatMap<GrafoNode>(n => {
-    const nodes: GrafoNode[] = [{ id: n.id, type: 'noticia', titulo: n.titulo, scoreCredibilidad: n.scoreCredibilidad ?? undefined }]
-    if (n.fuente && n.fuente.nombre) {
-      nodes.push({ id: `fuente-${n.id}`, type: 'fuente', nombre: n.fuente.nombre })
-    }
-    if (n.tema && n.tema.nombre) {
-      nodes.push({ id: `tema-${n.id}`, type: 'tema', nombre: n.tema.nombre })
-    }
-    return nodes
-  })
-
-  const grafoLinks = noticias.flatMap<GrafoLink>(n => {
-    const links: GrafoLink[] = []
-    if (n.fuente && n.fuente.nombre) links.push({ source: n.id, target: `fuente-${n.id}` })
-    if (n.tema && n.tema.nombre) links.push({ source: n.id, target: `tema-${n.id}` })
-    return links
-  })
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -134,15 +118,14 @@ export default function Dashboard() {
 
         <div className="space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Distribución de scores</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Distribuci\u00f3n de scores</h2>
             <CredibilidadChart noticias={noticias} />
           </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Grafo de relaciones</h2>
+            <GrafoSimple noticias={noticias} />
+          </div>
         </div>
-      </div>
-
-      <div>
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Grafo de relaciones</h2>
-        <GrafoVisualization nodes={grafoNodes} links={grafoLinks} />
       </div>
     </div>
   )

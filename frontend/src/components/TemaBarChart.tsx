@@ -51,9 +51,7 @@ export default function TemaBarChart({ data, loading }: TemaBarChartProps) {
       .style('font-size', '9px')
       .style('fill', '#64748b')
 
-    const credColor = d3.scaleLinear<string>()
-      .domain([0, 0.3, 0.6, 1])
-      .range(['#ef4444', '#ef4444', '#eab308', '#22c55e'])
+    const barColor = '#0ea5e9'
 
     const rects = svg.selectAll<SVGRectElement, TemaBarChartItem>('rect')
       .data(sorted)
@@ -63,7 +61,7 @@ export default function TemaBarChart({ data, loading }: TemaBarChartProps) {
       .attr('x', margin.left)
       .attr('height', y.bandwidth())
       .attr('width', 0)
-      .attr('fill', d => credColor(d.credibilidadPromedio))
+      .attr('fill', barColor)
       .attr('rx', 4)
       .attr('opacity', 0.85)
       .on('mouseenter', function () {
@@ -74,7 +72,7 @@ export default function TemaBarChart({ data, loading }: TemaBarChartProps) {
       })
 
     rects.append('title')
-      .text(d => `${d.tema}: ${d.total} noticias\nCred. prom: ${d.credibilidadPromedio}`)
+      .text(d => `${d.tema}: ${d.total} noticias\n${d.credibilidadPromedio != null ? 'Conf. ' + (d.credibilidadPromedio * 100).toFixed(0) + '%' : ''}`)
 
     rects.transition()
       .duration(600)
@@ -89,8 +87,8 @@ export default function TemaBarChart({ data, loading }: TemaBarChartProps) {
       .attr('x', d => x(d.total) + 6)
       .attr('y', d => (y(d.tema) ?? 0) + y.bandwidth() / 2 + 3)
       .attr('font-size', '10px')
-      .attr('fill', '#64748b')
-      .text(d => `${d.credibilidadPromedio}`)
+      .attr('fill', barColor)
+      .text(d => d.total.toString())
 
   }, [data])
 
